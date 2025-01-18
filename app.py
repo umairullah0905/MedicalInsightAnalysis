@@ -55,13 +55,13 @@ def app():
 
     # Snowflake connection
     connection_params = {
-        "account": st.secrets["MIB03883"],
-        "user": st.secrets["umairulla05"],
-        "password": st.secrets["Newboy@123"],
-        "role": st.secrets["ACCOUNTADMIN"],
-        "warehouse": st.secrets["medical_insight_analysis_wh"],
-        "database": st.secrets["medical_insight_analysis_db"],
-        "schema": st.secrets["PUBLIC"],
+        "account": st.secrets["snowflake_account"],
+        "user": st.secrets["snowflake_user"],
+        "password": st.secrets["snowflake_password"],
+        "role": st.secrets["snowflake_role"],
+        "warehouse": st.secrets["snowflake_warehouse"],
+        "database": st.secrets["snowflake_database"],
+        "schema": st.secrets["snowflake_schema"],
     }
     session = Session.builder.configs(connection_params).create()
 
