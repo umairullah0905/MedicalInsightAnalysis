@@ -1,6 +1,6 @@
 import streamlit as st
 from snowflake.snowpark.session import Session
-from snowflake.core import Root
+
 from snowflake.cortex import Complete
 
 # Constants
@@ -24,23 +24,23 @@ def init_service_metadata(session):
             metadata.append({"name": svc_name, "search_column": search_col})
         st.session_state.service_metadata = metadata
 
-def query_cortex_service(session, query, columns=None, filter=None):
-    """Query Cortex Search Service."""
+def query_cortex_search_service(session, service_name, query, columns=None, filter=None):
+    """
+    Query a Cortex Search Service directly using Snowflake SQL.
+    """
     if columns is None:
         columns = ["chunk"]
     if filter is None:
         filter = {}
 
-    db, schema = session.get_current_database(), session.get_current_schema()
-    cortex_service_name = st.session_state.get("selected_service", "")
-    cortex_service = (
-        Root(session)
-        .databases[db]
-        .schemas[schema]
-        .cortex_search_services[cortex_service_name]
-    )
-    context = cortex_service.search(query, columns=columns, filter=filter)
-    return context.results
+    # Construct a search query
+    search_query = f"""
+    SELECT *
+    FROM CORTEX_SEARCH({service_name}, '{query}', LIMIT {st.session_state.num_retrieved_chunks});
+    """
+    results = session.sql(search_query).collect()
+    return results
+
 
 def complete(model, prompt):
     """Generate text using the selected model."""
